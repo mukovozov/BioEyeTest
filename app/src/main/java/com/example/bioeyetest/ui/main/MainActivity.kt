@@ -2,7 +2,6 @@ package com.example.bioeyetest.ui.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -10,7 +9,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.bioeyetest.Navigator
 import com.example.bioeyetest.R
 import com.example.bioeyetest.databinding.ActivityMainBinding
-import com.example.bioeyetest.ui.recognition_result.FaceRecognitionResultFragment
+import com.example.bioeyetest.ui.recognition.FaceRecognitionFragment
 import com.example.bioeyetest.ui.welcome.WelcomeFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -38,7 +37,7 @@ class MainActivity : AppCompatActivity() {
                         is Navigator.Direction.NavigateTo -> {
 //                            navController.navigate(direction.navDirections)
                             val fragment = when (direction.navDirections) {
-                                FaceRecognitionResultFragment.DIRECTION -> FaceRecognitionResultFragment.newInstance()
+                                FaceRecognitionFragment.DIRECTION -> FaceRecognitionFragment.newInstance()
                                 WelcomeFragment.DIRECTION -> WelcomeFragment.newInstance()
                                 else -> throw IllegalStateException("Unknown direction")
                             }

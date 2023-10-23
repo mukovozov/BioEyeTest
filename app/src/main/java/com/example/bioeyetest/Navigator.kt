@@ -22,12 +22,10 @@ interface Navigator {
 }
 
 class NavigatorImpl @Inject constructor() : Navigator {
-    override val navEvents: MutableSharedFlow<Navigator.Direction> = MutableSharedFlow()
+    override val navEvents: MutableSharedFlow<Navigator.Direction> = MutableSharedFlow(extraBufferCapacity = 1)
 
     override fun navigateTo(navDirections: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            navEvents.emit(Navigator.Direction.NavigateTo(navDirections))
-        }
+        navEvents.tryEmit(Navigator.Direction.NavigateTo(navDirections))
     }
 
     override fun navigateBack() {

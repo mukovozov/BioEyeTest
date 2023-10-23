@@ -16,6 +16,6 @@
 
     <fragment
         android:id="@+id/faceRecognitionFragment"
-        android:name="com.example.bioeyetest.ui.recognition_result.FaceRecognitionResultFragment"
-        tools:layout="@layout/fragment_face_recognition_result" />
+        android:name="com.example.bioeyetest.ui.recognition.FaceRecognitionFragment"
+        tools:layout="@layout/fragment_face_recognition" />
 </navigation>
