@@ -1,9 +1,14 @@
 package com.example.bioeyetest.ui.recognition
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -44,6 +49,7 @@ class FaceRecognitionFragment : Fragment() {
                             binding.recognitionResult.isVisible = false
                             binding.cameraPreview.isVisible = true
                             binding.completeButton.isVisible = true
+                            startCamera()
                         }
 
                         is FaceRecognitionViewState.PreparationFailed -> {
@@ -61,6 +67,31 @@ class FaceRecognitionFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun startCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
+
+        cameraProviderFuture.addListener(
+            {
+                val cameraProvider = cameraProviderFuture.get()
+                val preview = Preview.Builder()
+                    .build()
+                    .also {
+                        it.setSurfaceProvider(binding.cameraPreview.surfaceProvider)
+                    }
+
+                val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+                try {
+                    cameraProvider.unbindAll()
+
+                    cameraProvider.bindToLifecycle(this, cameraSelector, preview)
+                } catch (e: Exception) {
+                    Log.e(TAG, "startCamera: ${e.message}", e)
+                }
+            },
+            ContextCompat.getMainExecutor(requireContext())
+        )
     }
 
     private fun setupUi() {
@@ -96,6 +127,7 @@ class FaceRecognitionFragment : Fragment() {
 
     companion object {
         const val DIRECTION = "toFaceRecognitionFragment"
+        private const val TAG = "FaceRecognitionFragment"
 
         fun newInstance(): FaceRecognitionFragment {
             return FaceRecognitionFragment()

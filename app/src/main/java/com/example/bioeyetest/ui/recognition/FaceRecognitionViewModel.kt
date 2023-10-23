@@ -32,29 +32,27 @@ class FaceRecognitionViewModel @Inject constructor(
     }
 
     private fun checkLightConditions() {
+        lightSensorProvider.start()
         viewModelScope.launch {
-            lightSensorProvider.lightSensorLux.collect { lux ->
-                val newViewState = when {
-                    lux < MIN_LIGHT_LUX -> {
-                        FaceRecognitionViewState.PreparationFailed(PreparationFailedReason.ROOM_IS_TOO_DARK)
-                    }
-
-                    lux > MAX_LIGHT_LUX -> {
-                        FaceRecognitionViewState.PreparationFailed(PreparationFailedReason.ROOM_IS_TOO_BRIGHT)
-                    }
-
-                    else -> {
-                        FaceRecognitionViewState.Recognition
-                    }
+            val lux = lightSensorProvider.lightSensorLux.first()
+            val newViewState = when {
+                lux < MIN_LIGHT_LUX -> {
+                    FaceRecognitionViewState.PreparationFailed(PreparationFailedReason.ROOM_IS_TOO_DARK)
                 }
 
-                lightSensorProvider.stop()
+                lux > MAX_LIGHT_LUX -> {
+                    FaceRecognitionViewState.PreparationFailed(PreparationFailedReason.ROOM_IS_TOO_BRIGHT)
+                }
 
-                _viewState.value = newViewState
+                else -> {
+                    FaceRecognitionViewState.Recognition
+                }
             }
-        }
 
-        lightSensorProvider.start()
+            lightSensorProvider.stop()
+
+            _viewState.value = newViewState
+        }
     }
 
     companion object {
