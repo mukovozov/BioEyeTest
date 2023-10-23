@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.camera.view.PreviewView.StreamState
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -17,9 +19,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.bioeyetest.R
 import com.example.bioeyetest.databinding.FragmentFaceRecognitionBinding
+import com.example.bioeyetest.face_recognition.FaceRecognitionResult
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class FaceRecognitionFragment : Fragment() {
@@ -49,7 +54,36 @@ class FaceRecognitionFragment : Fragment() {
                             binding.recognitionResult.isVisible = false
                             binding.cameraPreview.isVisible = true
                             binding.completeButton.isVisible = true
-                            startCamera()
+
+                            when (viewState.detectionResult) {
+                                FaceRecognitionResult.NO_RESULT -> {
+                                    binding.recognitionResult.isVisible = false
+                                }
+
+                                FaceRecognitionResult.FACE_DETECTED -> {
+                                    binding.recognitionResult.isVisible = true
+                                    binding.faceRecognitionResultIcon.setImageResource(R.drawable.ic_face_recognition_success)
+                                    binding.faceRecognitionResultTitle.setText(R.string.face_recognition_success_title)
+                                    binding.faceRecognitionResultTitle.setTextColor(
+                                        ContextCompat.getColor(
+                                            requireContext(),
+                                            R.color.face_recognition_success
+                                        )
+                                    )
+                                }
+
+                                FaceRecognitionResult.NO_FACE_DETECTED -> {
+                                    binding.recognitionResult.isVisible = true
+                                    binding.faceRecognitionResultIcon.setImageResource(R.drawable.ic_face_recognition_failure)
+                                    binding.faceRecognitionResultTitle.setText(R.string.face_recognition_failure_title)
+                                    binding.faceRecognitionResultTitle.setTextColor(
+                                        ContextCompat.getColor(
+                                            requireContext(),
+                                            R.color.face_recognition_failure
+                                        )
+                                    )
+                                }
+                            }
                         }
 
                         is FaceRecognitionViewState.PreparationFailed -> {
@@ -69,7 +103,15 @@ class FaceRecognitionFragment : Fragment() {
         }
     }
 
+    // TODO: remove!
+    private var isCameraStarted = false
+
     private fun startCamera() {
+        if (isCameraStarted) {
+            return
+        }
+
+        isCameraStarted = true
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
 
         cameraProviderFuture.addListener(
@@ -86,6 +128,7 @@ class FaceRecognitionFragment : Fragment() {
                     cameraProvider.unbindAll()
 
                     cameraProvider.bindToLifecycle(this, cameraSelector, preview)
+
                 } catch (e: Exception) {
                     Log.e(TAG, "startCamera: ${e.message}", e)
                 }
@@ -94,10 +137,45 @@ class FaceRecognitionFragment : Fragment() {
         )
     }
 
+    private fun startPeriodicRecognition() {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
+            var count = 0
+            while (count < 30) {
+                count++
+                withContext(Dispatchers.Main) {
+                    binding.cameraPreview.bitmap?.let {
+                        viewModel.onNewFrameReady(it)
+                        binding.previewFrame.setImageBitmap(it)
+                    }
+                }
+                delay(1000)
+            }
+        }
+    }
+
     private fun setupUi() {
         binding.errorView.retryButton.setOnClickListener {
             viewModel.onRetryButtonClicked()
         }
+
+        binding.completeButton.setOnClickListener {
+            viewModel.onCompleteSessionButtonClicked()
+        }
+
+        binding.cameraPreview.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+        binding.cameraPreview.previewStreamState.observe(viewLifecycleOwner) { streamState ->
+            when (streamState) {
+                StreamState.STREAMING -> {
+                    startPeriodicRecognition()
+                }
+
+                else -> {
+                    // do nothing
+                }
+            }
+        }
+
+        startCamera()
     }
 
     private fun showError(reason: PreparationFailedReason) {

@@ -1,13 +1,20 @@
 package com.example.bioeyetest.ui.recognition
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.bioeyetest.Navigator
+import com.example.bioeyetest.face_recognition.FaceRecognitionManager
+import com.example.bioeyetest.face_recognition.FaceRecognitionResult
 import com.example.bioeyetest.sensor.LightSensorProvider
+import com.example.bioeyetest.ui.session_summary.SessionSummaryFragment
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.face.Face
+import com.google.mlkit.vision.face.FaceDetector
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -15,7 +22,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FaceRecognitionViewModel @Inject constructor(
-    private val lightSensorProvider: LightSensorProvider
+    private val lightSensorProvider: LightSensorProvider,
+    private val faceRecognitionManager: FaceRecognitionManager,
+    private val navigator: Navigator,
 ) : ViewModel() {
 
     val viewState: StateFlow<FaceRecognitionViewState>
@@ -25,6 +34,22 @@ class FaceRecognitionViewModel @Inject constructor(
 
     init {
         checkLightConditions()
+    }
+
+    fun onNewFrameReady(frame: Bitmap) {
+        viewModelScope.launch {
+            faceRecognitionManager.process(frame)
+                .onSuccess { result ->
+                    _viewState.value = FaceRecognitionViewState.Recognition(result)
+                }
+                .onFailure { error ->
+                    Log.e(TAG, "onNewFrameReady: ${error.message}", error)
+                }
+        }
+    }
+
+    fun onCompleteSessionButtonClicked() {
+        navigator.navigateTo(SessionSummaryFragment.DIRECTION)
     }
 
     fun onRetryButtonClicked() {
@@ -45,7 +70,7 @@ class FaceRecognitionViewModel @Inject constructor(
                 }
 
                 else -> {
-                    FaceRecognitionViewState.Recognition
+                    FaceRecognitionViewState.Recognition(FaceRecognitionResult.NO_RESULT)
                 }
             }
 
@@ -57,7 +82,11 @@ class FaceRecognitionViewModel @Inject constructor(
 
     companion object {
         private const val TAG = "FaceRecognitionViewModel"
-        private const val MIN_LIGHT_LUX = 20
+
+        // TODO: return 20
+        private const val MIN_LIGHT_LUX = 0
         private const val MAX_LIGHT_LUX = 1000
+        private const val FACE_RECOGNITION_PERIOD_MILLIS = 1000L
+        private const val FACE_RECOGNITION_SESSION_MAX_DURATION_SECONDS = 30L
     }
 }
