@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">BioEyeTest</string>
+
+    <string name="welcome_title">Welcome</string>
+    <string name="welcome_description">A Small Demo of our\nFace Recognition technology.</string>
+    <string name="welcome_user_title">BioEye User</string>
+    <string name="welcome_launch_button_text">Launch Face Detector</string>
+
+    <string name="face_recognition_room_is_too_bright_error_title">The room is to bright</string>
+    <string name="face_recognition_room_is_too_bright_error_message">Please dim the lighting</string>
+    <string name="face_recognition_room_is_too_dark_error_title">The room is to dark</string>
+    <string name="face_recognition_room_is_too_dark_error_message">Please increase the lighting</string>
+    <string name="face_recognition_error_button_text">Try Again</string>
+
+    <string name="face_recognition_success_title">Face Detected</string>
+    <string name="face_recognition_failure_title">No Face</string>
+    <string name="face_recognition_complete_button_title">Complete Session</string>
+
+    <string name="session_summary_title">Session Summary</string>
+    <string name="session_summary_duration_title">Duration: %d sec</string>
+    <string name="session_summary_face_detected_title">Face Detected: %d sec</string>
+    <string name="session_summary_no_face_detected_title">No Face: %d sec</string>
+    <string name="session_summary_done_button_text">Done</string>
+</resources>
