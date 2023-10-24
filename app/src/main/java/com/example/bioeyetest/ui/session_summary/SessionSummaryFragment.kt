@@ -38,6 +38,10 @@ class SessionSummaryFragment : Fragment() {
             viewModel.onShareButtonClicked()
         }
 
+        binding.doneButton.setOnClickListener {
+            viewModel.onDoneButtonClicked()
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.viewState.collect { viewState ->

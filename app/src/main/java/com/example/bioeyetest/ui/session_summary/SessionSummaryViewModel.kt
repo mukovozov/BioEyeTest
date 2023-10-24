@@ -5,6 +5,8 @@ import android.content.Context
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.bioeyetest.Navigator
+import com.example.bioeyetest.R
 import com.example.bioeyetest.csv_generation.SessionCSVGenerator
 import com.example.bioeyetest.face_recognition.FaceRecognitionManager
 import com.example.bioeyetest.face_recognition.FaceRecognitionResult
@@ -27,6 +29,7 @@ class SessionSummaryViewModel @Inject constructor(
     private val faceRecognitionManager: FaceRecognitionManager,
     private val sessionSummaryCsvGenerator: SessionCSVGenerator,
     private val timeProvider: TimeProvider,
+    private val navigator: Navigator,
 ) : ViewModel() {
 
     val viewState: StateFlow<SessionSummaryViewState>
@@ -83,6 +86,11 @@ class SessionSummaryViewModel @Inject constructor(
                     // TODO: send toast event
                 }
         }
+    }
+
+    fun onDoneButtonClicked() {
+        faceRecognitionManager.clear()
+        navigator.navigateTo(R.id.action_summaryFragment_to_welcomeFragment)
     }
 
     private companion object {

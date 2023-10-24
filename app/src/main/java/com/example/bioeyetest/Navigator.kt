@@ -1,34 +1,26 @@
 package com.example.bioeyetest
 
-import androidx.navigation.NavDirections
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import android.os.Bundle
+import androidx.annotation.IdRes
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 interface Navigator {
     val navEvents: SharedFlow<Direction>
 
-    fun navigateTo(navDirections: String)
-
-    fun navigateBack()
+    fun navigateTo(@IdRes actionId: Int, args: Bundle? = null)
 
     sealed class Direction {
-        data class NavigateTo(val navDirections: String) : Direction()
-        object NavigateBack : Direction()
+        data class NavigateTo(@IdRes val actionId: Int, val args: Bundle? = null) : Direction()
     }
 }
 
 class NavigatorImpl @Inject constructor() : Navigator {
     override val navEvents: MutableSharedFlow<Navigator.Direction> = MutableSharedFlow(extraBufferCapacity = 1)
 
-    override fun navigateTo(navDirections: String) {
-        navEvents.tryEmit(Navigator.Direction.NavigateTo(navDirections))
+    override fun navigateTo(@IdRes actionId: Int, args: Bundle?) {
+        navEvents.tryEmit(Navigator.Direction.NavigateTo(actionId, args))
     }
 
-    override fun navigateBack() {
-        navEvents.tryEmit(Navigator.Direction.NavigateBack)
-    }
 }

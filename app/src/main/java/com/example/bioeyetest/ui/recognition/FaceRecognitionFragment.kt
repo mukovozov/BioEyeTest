@@ -207,7 +207,6 @@ class FaceRecognitionFragment : Fragment() {
     }
 
     companion object {
-        const val DIRECTION = "toFaceRecognitionFragment"
         private const val TAG = "FaceRecognitionFragment"
 
         fun newInstance(): FaceRecognitionFragment {

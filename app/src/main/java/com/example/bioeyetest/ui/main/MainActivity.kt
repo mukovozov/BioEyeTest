@@ -6,12 +6,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.NavHostFragment
 import com.example.bioeyetest.Navigator
 import com.example.bioeyetest.R
 import com.example.bioeyetest.databinding.ActivityMainBinding
-import com.example.bioeyetest.ui.recognition.FaceRecognitionFragment
-import com.example.bioeyetest.ui.session_summary.SessionSummaryFragment
-import com.example.bioeyetest.ui.welcome.WelcomeFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,46 +27,19 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        val navController = binding.navHostFragment.getFragment<NavHostFragment>().navController
+        val navController = binding.navHostFragment.getFragment<NavHostFragment>().navController
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 navigator.navEvents.collect { direction ->
                     when (direction) {
                         is Navigator.Direction.NavigateTo -> {
-//                            navController.navigate(direction.navDirections)
-                            val fragment = when (direction.navDirections) {
-                                FaceRecognitionFragment.DIRECTION -> FaceRecognitionFragment.newInstance()
-                                WelcomeFragment.DIRECTION -> WelcomeFragment.newInstance()
-                                SessionSummaryFragment.DIRECTION -> SessionSummaryFragment.newInstance()
-                                else -> throw IllegalStateException("Unknown direction")
-                            }
-
-                            openFragment(fragment)
-                        }
-
-                        is Navigator.Direction.NavigateBack -> {
-//                            if (!navController.popBackStack()) {
-                            if (supportFragmentManager.backStackEntryCount == 0) {
-                                finish()
-                            }
+                            navController.navigate(direction.actionId, direction.args)
                         }
                     }
                 }
             }
         }
 
-    }
-
-    override fun onResume() {
-        super.onResume()
-        navigator.navigateTo(WelcomeFragment.DIRECTION)
-    }
-
-    private fun openFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
-            .commit()
     }
 }

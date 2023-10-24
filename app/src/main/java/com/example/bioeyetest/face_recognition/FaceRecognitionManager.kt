@@ -15,6 +15,9 @@ import kotlin.coroutines.suspendCoroutine
 interface FaceRecognitionManager {
     val processedResults: StateFlow<List<FaceRecognitionData>>
     suspend fun process(bitmap: Bitmap): Result<FaceRecognitionResult>
+
+    // TODO: do here only processing, create repository and save data per session there. create session id on welcome screen and pass it through screens.
+    fun clear()
 }
 
 class FaceRecognitionManagerImpl @Inject constructor(
@@ -47,6 +50,10 @@ class FaceRecognitionManagerImpl @Inject constructor(
                     continuation.resume(Result.failure(exception))
                 }
         }
+    }
+
+    override fun clear() {
+        processedResults.value = emptyList()
     }
 
     private companion object {

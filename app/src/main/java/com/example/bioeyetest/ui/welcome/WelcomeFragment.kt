@@ -66,7 +66,6 @@ class WelcomeFragment : Fragment() {
     }
 
     companion object {
-        const val DIRECTION = "toWelcomeFragment"
         fun newInstance(): WelcomeFragment {
             return WelcomeFragment()
         }

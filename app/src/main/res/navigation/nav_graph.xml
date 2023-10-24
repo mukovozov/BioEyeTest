@@ -10,12 +10,27 @@
         android:name="com.example.bioeyetest.ui.welcome.WelcomeFragment"
         tools:layout="@layout/fragment_welcome">
         <action
-            android:id="@+id/toFaceRecognition"
+            android:id="@+id/action_welcome_to_face_recognition"
             app:destination="@id/faceRecognitionFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/faceRecognitionFragment"
         android:name="com.example.bioeyetest.ui.recognition.FaceRecognitionFragment"
-        tools:layout="@layout/fragment_face_recognition" />
+        tools:layout="@layout/fragment_face_recognition">
+        <action
+            android:id="@+id/action_face_recognition_to_session_summary"
+            app:destination="@id/summaryFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/summaryFragment"
+        android:name="com.example.bioeyetest.ui.session_summary.SessionSummaryFragment"
+        tools:layout="@layout/fragment_session_summary">
+        <action
+            android:id="@+id/action_summaryFragment_to_welcomeFragment"
+            app:destination="@id/welcomeFragment"
+            app:popUpTo="@id/welcomeFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
 </navigation>

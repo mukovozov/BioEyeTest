@@ -5,18 +5,14 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bioeyetest.Navigator
+import com.example.bioeyetest.R
 import com.example.bioeyetest.face_recognition.FaceRecognitionManager
 import com.example.bioeyetest.face_recognition.FaceRecognitionResult
 import com.example.bioeyetest.sensor.LightSensorProvider
-import com.example.bioeyetest.ui.session_summary.SessionSummaryFragment
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.face.Face
-import com.google.mlkit.vision.face.FaceDetector
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -49,7 +45,7 @@ class FaceRecognitionViewModel @Inject constructor(
     }
 
     fun onCompleteSessionButtonClicked() {
-        navigator.navigateTo(SessionSummaryFragment.DIRECTION)
+        navigator.navigateTo(R.id.action_face_recognition_to_session_summary)
     }
 
     fun onRetryButtonClicked() {
