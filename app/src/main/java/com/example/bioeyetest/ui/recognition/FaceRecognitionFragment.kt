@@ -150,6 +150,9 @@ class FaceRecognitionFragment : Fragment() {
                 }
                 delay(1000)
             }
+
+            // TODO: move the whole counter to viewModel probably
+            viewModel.onCompleteSessionButtonClicked()
         }
     }
 

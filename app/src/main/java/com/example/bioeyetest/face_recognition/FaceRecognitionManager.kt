@@ -2,6 +2,7 @@ package com.example.bioeyetest.face_recognition
 
 import android.graphics.Bitmap
 import android.util.Log
+import com.example.bioeyetest.utils.TimeProvider
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetector
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,15 +13,16 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 interface FaceRecognitionManager {
-    val processedResults: StateFlow<List<FaceRecognitionResult>>
+    val processedResults: StateFlow<List<FaceRecognitionData>>
     suspend fun process(bitmap: Bitmap): Result<FaceRecognitionResult>
 }
 
 class FaceRecognitionManagerImpl @Inject constructor(
-    private val faceDetector: FaceDetector
+    private val faceDetector: FaceDetector,
+    private val timeProvider: TimeProvider,
 ) : FaceRecognitionManager {
 
-    override val processedResults = MutableStateFlow<List<FaceRecognitionResult>>(emptyList())
+    override val processedResults = MutableStateFlow<List<FaceRecognitionData>>(emptyList())
 
     override suspend fun process(bitmap: Bitmap): Result<FaceRecognitionResult> {
         return suspendCoroutine { continuation ->
@@ -35,7 +37,7 @@ class FaceRecognitionManagerImpl @Inject constructor(
                     }
 
                     processedResults.update {
-                        it.plus(recognitionResult)
+                        it.plus(FaceRecognitionData(recognitionResult, timeProvider.currentTimeMillis))
                     }
 
                     continuation.resume(Result.success(recognitionResult))
