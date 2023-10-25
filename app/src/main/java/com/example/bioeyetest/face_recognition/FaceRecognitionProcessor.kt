@@ -2,32 +2,37 @@ package com.example.bioeyetest.face_recognition
 
 import android.graphics.Bitmap
 import android.util.Log
+import com.example.bioeyetest.utils.DispatchersProvider
 import com.example.bioeyetest.utils.TimeProvider
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetector
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-interface FaceRecognitionManager {
-    val processedResults: StateFlow<List<FaceRecognitionData>>
+interface FaceRecognitionProcessor {
     suspend fun process(bitmap: Bitmap): Result<FaceRecognitionResult>
-
-    // TODO: do here only processing, create repository and save data per session there. create session id on welcome screen and pass it through screens.
-    fun clear()
 }
 
-class FaceRecognitionManagerImpl @Inject constructor(
+class FaceRecognitionProcessorImpl @Inject constructor(
+    private val faceRecognitionDataRepository: FaceRecognitionDataRepository,
     private val faceDetector: FaceDetector,
     private val timeProvider: TimeProvider,
-) : FaceRecognitionManager {
-
-    override val processedResults = MutableStateFlow<List<FaceRecognitionData>>(emptyList())
+    private val dispatchersProvider: DispatchersProvider,
+) : FaceRecognitionProcessor {
 
     override suspend fun process(bitmap: Bitmap): Result<FaceRecognitionResult> {
+        return withContext(dispatchersProvider.default) {
+            processImpl(bitmap).onSuccess { recognitionResult ->
+                faceRecognitionDataRepository.save(
+                    FaceRecognitionData(recognitionResult, timeProvider.currentTimeMillis)
+                )
+            }
+        }
+    }
+
+    private suspend fun processImpl(bitmap: Bitmap): Result<FaceRecognitionResult> {
         return suspendCoroutine { continuation ->
             val inputImage = InputImage.fromBitmap(bitmap, 0)
 
@@ -39,10 +44,6 @@ class FaceRecognitionManagerImpl @Inject constructor(
                         FaceRecognitionResult.FACE_DETECTED
                     }
 
-                    processedResults.update {
-                        it.plus(FaceRecognitionData(recognitionResult, timeProvider.currentTimeMillis))
-                    }
-
                     continuation.resume(Result.success(recognitionResult))
                 }
                 .addOnFailureListener { exception ->
@@ -50,10 +51,6 @@ class FaceRecognitionManagerImpl @Inject constructor(
                     continuation.resume(Result.failure(exception))
                 }
         }
-    }
-
-    override fun clear() {
-        processedResults.value = emptyList()
     }
 
     private companion object {

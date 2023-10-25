@@ -8,7 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.bioeyetest.Navigator
 import com.example.bioeyetest.R
 import com.example.bioeyetest.csv_generation.SessionCSVGenerator
-import com.example.bioeyetest.face_recognition.FaceRecognitionManager
+import com.example.bioeyetest.face_recognition.FaceRecognitionDataUseCase
+import com.example.bioeyetest.face_recognition.FaceRecognitionProcessor
 import com.example.bioeyetest.face_recognition.FaceRecognitionResult
 import com.example.bioeyetest.utils.TimeProvider
 import com.example.bioeyetest.utils.toIso8601
@@ -26,7 +27,7 @@ import javax.inject.Inject
 @SuppressLint("StaticFieldLeak")
 class SessionSummaryViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val faceRecognitionManager: FaceRecognitionManager,
+    private val faceRecognitionDataUseCase: FaceRecognitionDataUseCase,
     private val sessionSummaryCsvGenerator: SessionCSVGenerator,
     private val timeProvider: TimeProvider,
     private val navigator: Navigator,
@@ -41,38 +42,42 @@ class SessionSummaryViewModel @Inject constructor(
     private val _events = MutableSharedFlow<SessionSummaryEvents>(extraBufferCapacity = 1)
 
     init {
-        val processedFrames = faceRecognitionManager.processedResults.value
+        viewModelScope.launch {
 
-        val total = processedFrames.size
-        val (face, noFace) = processedFrames.fold(0 to 0) { acc, faceRecognitionData ->
-            when (faceRecognitionData.result) {
-                FaceRecognitionResult.FACE_DETECTED -> {
-                    acc.copy(first = acc.first + 1)
-                }
+            val processedFrames = faceRecognitionDataUseCase.getAll()
 
-                FaceRecognitionResult.NO_FACE_DETECTED -> {
-                    acc.copy(second = acc.second + 1)
-                }
+            val total = processedFrames.size
+            val (face, noFace) = processedFrames.fold(0 to 0) { acc, faceRecognitionData ->
+                when (faceRecognitionData.result) {
+                    FaceRecognitionResult.FACE_DETECTED -> {
+                        acc.copy(first = acc.first + 1)
+                    }
 
-                else -> {
-                    acc
+                    FaceRecognitionResult.NO_FACE_DETECTED -> {
+                        acc.copy(second = acc.second + 1)
+                    }
+
+                    else -> {
+                        acc
+                    }
                 }
             }
-        }
 
-        _viewState.update {
-            it.copy(
-                sessionTotalDurationSeconds = total,
-                faceDetectedDurationSeconds = face,
-                noFaceDetectedDurationSeconds = noFace
-            )
+            _viewState.update {
+                it.copy(
+                    sessionTotalDurationSeconds = total,
+                    faceDetectedDurationSeconds = face,
+                    noFaceDetectedDurationSeconds = noFace
+                )
+            }
         }
     }
 
     fun onShareButtonClicked() {
         viewModelScope.launch {
             val fileName = "$CSV_REPORT_FILE_PREFIX${timeProvider.currentTimeMillis.toIso8601()}"
-            sessionSummaryCsvGenerator.generateCSV(faceRecognitionManager.processedResults.value, fileName)
+            val frames = faceRecognitionDataUseCase.getAll()
+            sessionSummaryCsvGenerator.generateCSV(frames, fileName)
                 .onSuccess { csv ->
                     val contentUri = FileProvider.getUriForFile(
                         context,
@@ -89,8 +94,11 @@ class SessionSummaryViewModel @Inject constructor(
     }
 
     fun onDoneButtonClicked() {
-        faceRecognitionManager.clear()
-        navigator.navigateTo(R.id.action_summaryFragment_to_welcomeFragment)
+        viewModelScope.launch {
+            faceRecognitionDataUseCase.clear()
+
+            navigator.navigateTo(R.id.action_summaryFragment_to_welcomeFragment)
+        }
     }
 
     private companion object {

@@ -14,6 +14,8 @@ interface LightSensorProvider {
     val lightSensorLux: SharedFlow<Float>
     fun start()
     fun stop()
+
+//    suspend fun requestSingleUpdate(): Float
 }
 
 class LightSensorProviderImpl @Inject constructor(
@@ -38,6 +40,18 @@ class LightSensorProviderImpl @Inject constructor(
     }
 
     override fun start() {
+        registerListener()
+    }
+
+    override fun stop() {
+        unregisterListener()
+    }
+
+//    override suspend fun requestSingleUpdate(): Float {
+//
+//    }
+
+    private fun registerListener() {
         sensorManager.registerListener(
             listener,
             lightSensor,
@@ -45,7 +59,7 @@ class LightSensorProviderImpl @Inject constructor(
         )
     }
 
-    override fun stop() {
+    private fun unregisterListener() {
         sensorManager.unregisterListener(listener, lightSensor)
     }
 }

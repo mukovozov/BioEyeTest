@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bioeyetest.Navigator
 import com.example.bioeyetest.R
-import com.example.bioeyetest.face_recognition.FaceRecognitionManager
+import com.example.bioeyetest.face_recognition.FaceRecognitionProcessor
 import com.example.bioeyetest.face_recognition.FaceRecognitionResult
 import com.example.bioeyetest.sensor.LightSensorProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FaceRecognitionViewModel @Inject constructor(
     private val lightSensorProvider: LightSensorProvider,
-    private val faceRecognitionManager: FaceRecognitionManager,
+    private val faceRecognitionProcessor: FaceRecognitionProcessor,
     private val navigator: Navigator,
 ) : ViewModel() {
 
@@ -34,7 +34,7 @@ class FaceRecognitionViewModel @Inject constructor(
 
     fun onNewFrameReady(frame: Bitmap) {
         viewModelScope.launch {
-            faceRecognitionManager.process(frame)
+            faceRecognitionProcessor.process(frame)
                 .onSuccess { result ->
                     _viewState.value = FaceRecognitionViewState.Recognition(result)
                 }
