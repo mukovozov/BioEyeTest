@@ -20,7 +20,8 @@
         tools:layout="@layout/fragment_face_recognition">
         <action
             android:id="@+id/action_face_recognition_to_session_summary"
-            app:destination="@id/summaryFragment" />
+            app:destination="@id/summaryFragment"
+            app:popUpTo="@id/welcomeFragment"/>
     </fragment>
 
     <fragment

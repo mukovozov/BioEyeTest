@@ -93,7 +93,15 @@ class SessionSummaryViewModel @Inject constructor(
         }
     }
 
+    fun onBackPressed() {
+        cleanUpAndGoToWelcomeScreen()
+    }
+
     fun onDoneButtonClicked() {
+        cleanUpAndGoToWelcomeScreen()
+    }
+
+    private fun cleanUpAndGoToWelcomeScreen() {
         viewModelScope.launch {
             faceRecognitionDataUseCase.clear()
 
