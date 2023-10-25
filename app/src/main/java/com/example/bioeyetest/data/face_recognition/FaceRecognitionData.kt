@@ -1,4 +1,4 @@
-package com.example.bioeyetest.face_recognition
+package com.example.bioeyetest.data.face_recognition
 
 data class FaceRecognitionData(
     val result: FaceRecognitionResult,

@@ -1,4 +1,4 @@
-package com.example.bioeyetest.utils
+package com.example.bioeyetest.core
 
 import java.text.SimpleDateFormat
 import java.util.*

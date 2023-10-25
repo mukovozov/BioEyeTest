@@ -1,6 +1,6 @@
 package com.example.bioeyetest.ui.recognition
 
-import com.example.bioeyetest.face_recognition.FaceRecognitionResult
+import com.example.bioeyetest.data.face_recognition.FaceRecognitionResult
 
 sealed class FaceRecognitionViewState {
     data class Recognition(val detectionResult: FaceRecognitionResult) : FaceRecognitionViewState()

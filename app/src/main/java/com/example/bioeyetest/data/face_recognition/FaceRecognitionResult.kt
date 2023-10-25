@@ -1,4 +1,4 @@
-package com.example.bioeyetest.face_recognition
+package com.example.bioeyetest.data.face_recognition
 
 enum class FaceRecognitionResult(val binaryValue: Int) {
     NO_RESULT(-1),

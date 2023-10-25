@@ -19,7 +19,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.bioeyetest.utils.BioEyeTestFileProvider"
+            android:authorities="com.example.bioeyetest.core.BioEyeTestFileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

@@ -1,7 +1,7 @@
 package com.example.bioeyetest.ui.welcome
 
 import androidx.lifecycle.ViewModel
-import com.example.bioeyetest.Navigator
+import com.example.bioeyetest.ui.Navigator
 import com.example.bioeyetest.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

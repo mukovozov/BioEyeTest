@@ -17,7 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.bioeyetest.R
 import com.example.bioeyetest.databinding.FragmentFaceRecognitionBinding
-import com.example.bioeyetest.face_recognition.FaceRecognitionResult
+import com.example.bioeyetest.data.face_recognition.FaceRecognitionResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 

@@ -1,9 +1,12 @@
-package com.example.bioeyetest.face_recognition
+package com.example.bioeyetest.domain.face_recognition
 
 import android.graphics.Bitmap
 import android.util.Log
-import com.example.bioeyetest.utils.DispatchersProvider
-import com.example.bioeyetest.utils.TimeProvider
+import com.example.bioeyetest.data.face_recognition.FaceRecognitionData
+import com.example.bioeyetest.data.face_recognition.FaceRecognitionDataRepository
+import com.example.bioeyetest.data.face_recognition.FaceRecognitionResult
+import com.example.bioeyetest.core.DispatchersProvider
+import com.example.bioeyetest.core.TimeProvider
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetector
 import kotlinx.coroutines.withContext

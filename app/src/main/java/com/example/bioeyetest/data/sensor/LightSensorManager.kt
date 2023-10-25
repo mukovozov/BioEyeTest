@@ -1,11 +1,11 @@
-package com.example.bioeyetest.sensor
+package com.example.bioeyetest.data.sensor
 
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import com.example.bioeyetest.utils.DispatchersProvider
+import com.example.bioeyetest.core.DispatchersProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow

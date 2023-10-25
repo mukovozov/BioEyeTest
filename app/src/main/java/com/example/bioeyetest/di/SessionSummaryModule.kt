@@ -1,7 +1,7 @@
 package com.example.bioeyetest.di
 
-import com.example.bioeyetest.csv_generation.SessionCSVGenerator
-import com.example.bioeyetest.csv_generation.SessionCSVGeneratorImpl
+import com.example.bioeyetest.domain.csv_generation.SessionCSVGenerator
+import com.example.bioeyetest.domain.csv_generation.SessionCSVGeneratorImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

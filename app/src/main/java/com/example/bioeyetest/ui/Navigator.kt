@@ -1,4 +1,4 @@
-package com.example.bioeyetest
+package com.example.bioeyetest.ui
 
 import android.os.Bundle
 import androidx.annotation.IdRes

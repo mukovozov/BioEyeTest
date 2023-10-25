@@ -1,17 +1,13 @@
 package com.example.bioeyetest.di
 
-import com.example.bioeyetest.Navigator
-import com.example.bioeyetest.NavigatorImpl
-import com.example.bioeyetest.csv_generation.SessionCSVGenerator
-import com.example.bioeyetest.csv_generation.SessionCSVGeneratorImpl
-import com.example.bioeyetest.face_recognition.FaceRecognitionDataRepository
-import com.example.bioeyetest.face_recognition.FaceRecognitionDataRepositoryImpl
-import com.example.bioeyetest.utils.DispatchersProvider
-import com.example.bioeyetest.utils.DispatchersProviderImpl
-import com.example.bioeyetest.utils.FileManager
-import com.example.bioeyetest.utils.FileManagerImpl
-import com.example.bioeyetest.utils.TimeProvider
-import com.example.bioeyetest.utils.TimeProviderImpl
+import com.example.bioeyetest.ui.Navigator
+import com.example.bioeyetest.ui.NavigatorImpl
+import com.example.bioeyetest.core.DispatchersProvider
+import com.example.bioeyetest.core.DispatchersProviderImpl
+import com.example.bioeyetest.core.FileManager
+import com.example.bioeyetest.core.FileManagerImpl
+import com.example.bioeyetest.core.TimeProvider
+import com.example.bioeyetest.core.TimeProviderImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

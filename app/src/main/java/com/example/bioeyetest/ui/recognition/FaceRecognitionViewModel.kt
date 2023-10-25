@@ -4,11 +4,11 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bioeyetest.Navigator
+import com.example.bioeyetest.ui.Navigator
 import com.example.bioeyetest.R
-import com.example.bioeyetest.face_recognition.FaceRecognitionProcessor
-import com.example.bioeyetest.face_recognition.FaceRecognitionResult
-import com.example.bioeyetest.sensor.LightSensorManager
+import com.example.bioeyetest.domain.face_recognition.FaceRecognitionProcessor
+import com.example.bioeyetest.data.face_recognition.FaceRecognitionResult
+import com.example.bioeyetest.data.sensor.LightSensorManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

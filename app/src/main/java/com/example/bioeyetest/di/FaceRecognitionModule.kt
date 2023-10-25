@@ -1,13 +1,13 @@
 package com.example.bioeyetest.di
 
-import com.example.bioeyetest.face_recognition.FaceRecognitionDataRepository
-import com.example.bioeyetest.face_recognition.FaceRecognitionDataRepositoryImpl
-import com.example.bioeyetest.face_recognition.FaceRecognitionDataUseCase
-import com.example.bioeyetest.face_recognition.FaceRecognitionDataUseCaseImpl
-import com.example.bioeyetest.face_recognition.FaceRecognitionProcessor
-import com.example.bioeyetest.face_recognition.FaceRecognitionProcessorImpl
-import com.example.bioeyetest.sensor.LightSensorManager
-import com.example.bioeyetest.sensor.LightSensorManagerImpl
+import com.example.bioeyetest.data.face_recognition.FaceRecognitionDataRepository
+import com.example.bioeyetest.data.face_recognition.FaceRecognitionDataRepositoryImpl
+import com.example.bioeyetest.domain.face_recognition.FaceRecognitionDataUseCase
+import com.example.bioeyetest.domain.face_recognition.FaceRecognitionDataUseCaseImpl
+import com.example.bioeyetest.domain.face_recognition.FaceRecognitionProcessor
+import com.example.bioeyetest.domain.face_recognition.FaceRecognitionProcessorImpl
+import com.example.bioeyetest.data.sensor.LightSensorManager
+import com.example.bioeyetest.data.sensor.LightSensorManagerImpl
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions

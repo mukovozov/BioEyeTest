@@ -2,13 +2,11 @@ package com.example.bioeyetest.ui.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.NavHostFragment
-import com.example.bioeyetest.Navigator
-import com.example.bioeyetest.R
+import com.example.bioeyetest.ui.Navigator
 import com.example.bioeyetest.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

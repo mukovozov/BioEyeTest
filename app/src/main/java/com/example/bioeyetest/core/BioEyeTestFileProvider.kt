@@ -1,4 +1,4 @@
-package com.example.bioeyetest.utils
+package com.example.bioeyetest.core
 
 import androidx.core.content.FileProvider
 

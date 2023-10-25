@@ -1,13 +1,11 @@
-package com.example.bioeyetest.utils
+package com.example.bioeyetest.core
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.BufferedOutputStream
 import java.io.BufferedWriter
 import java.io.File
-import java.io.FileOutputStream
 import java.io.FileWriter
 import javax.inject.Inject
 

@@ -1,5 +1,7 @@
-package com.example.bioeyetest.face_recognition
+package com.example.bioeyetest.domain.face_recognition
 
+import com.example.bioeyetest.data.face_recognition.FaceRecognitionData
+import com.example.bioeyetest.data.face_recognition.FaceRecognitionDataRepository
 import javax.inject.Inject
 
 interface FaceRecognitionDataUseCase {
