@@ -49,6 +49,7 @@ class FaceRecognitionViewModel @Inject constructor(
     }
 
     fun onRetryButtonClicked() {
+        MIN_LIGHT_LUX = 20
         checkLightConditions()
     }
 
@@ -76,7 +77,7 @@ class FaceRecognitionViewModel @Inject constructor(
     companion object {
         private const val TAG = "FaceRecognitionViewModel"
 
-        private const val MIN_LIGHT_LUX = 20
+        private var MIN_LIGHT_LUX = 500
         private const val MAX_LIGHT_LUX = 1000
         private const val FACE_RECOGNITION_PERIOD_MILLIS = 1000L
         private const val FACE_RECOGNITION_SESSION_MAX_DURATION_SECONDS = 30L

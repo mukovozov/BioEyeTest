@@ -103,15 +103,7 @@ class FaceRecognitionFragment : Fragment() {
         }
     }
 
-    // TODO: remove!
-    private var isCameraStarted = false
-
     private fun startCamera() {
-        if (isCameraStarted) {
-            return
-        }
-
-        isCameraStarted = true
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
 
         cameraProviderFuture.addListener(

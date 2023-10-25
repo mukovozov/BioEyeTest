@@ -3,6 +3,9 @@
 
     <style name="BioEyeButtonStyle" parent="Widget.AppCompat.Button">
         <item name="android:background">@drawable/button_background</item>
+        <item name="backgroundTint">@color/white</item>
+        <item name="android:foreground">?selectableItemBackground</item>
+        <item name="android:textAllCaps">false</item>
         <item name="android:textSize">18sp</item>
         <item name="tint">@color/white</item>
         <item name="textAllCaps">false</item>

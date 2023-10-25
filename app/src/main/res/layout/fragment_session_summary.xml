@@ -63,7 +63,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/summary_duration_success" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/done_button"
         style="@style/BioEyeButtonStyle"
         android:layout_width="0dp"
