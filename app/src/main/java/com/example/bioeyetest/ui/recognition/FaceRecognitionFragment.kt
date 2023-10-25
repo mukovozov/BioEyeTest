@@ -6,8 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.CameraController
+import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.camera.view.PreviewView.StreamState
 import androidx.core.content.ContextCompat
@@ -21,10 +25,7 @@ import com.example.bioeyetest.R
 import com.example.bioeyetest.databinding.FragmentFaceRecognitionBinding
 import com.example.bioeyetest.face_recognition.FaceRecognitionResult
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class FaceRecognitionFragment : Fragment() {
@@ -34,6 +35,8 @@ class FaceRecognitionFragment : Fragment() {
     private val binding: FragmentFaceRecognitionBinding
         get() = _binding!!
 
+    private lateinit var cameraController: LifecycleCameraController
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentFaceRecognitionBinding.inflate(inflater, container, false)
         return binding.root
@@ -42,6 +45,21 @@ class FaceRecognitionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupUi()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.events.collect { events ->
+                    when (events) {
+                        is FaceRecognitionEvents.ProvideNextFrame -> {
+                            binding.cameraPreview.bitmap?.let { bitmap ->
+                                viewModel.onNewFrameReady(bitmap)
+                                binding.previewFrame.setImageBitmap(bitmap)
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -104,48 +122,14 @@ class FaceRecognitionFragment : Fragment() {
     }
 
     private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
+        val context = context ?: return
 
-        cameraProviderFuture.addListener(
-            {
-                val cameraProvider = cameraProviderFuture.get()
-                val preview = Preview.Builder()
-                    .build()
-                    .also {
-                        it.setSurfaceProvider(binding.cameraPreview.surfaceProvider)
-                    }
-
-                val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-                try {
-                    cameraProvider.unbindAll()
-
-                    cameraProvider.bindToLifecycle(this, cameraSelector, preview)
-
-                } catch (e: Exception) {
-                    Log.e(TAG, "startCamera: ${e.message}", e)
-                }
-            },
-            ContextCompat.getMainExecutor(requireContext())
-        )
-    }
-
-    private fun startPeriodicRecognition() {
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
-            var count = 0
-            while (count < 30) {
-                count++
-                withContext(Dispatchers.Main) {
-                    binding.cameraPreview.bitmap?.let {
-                        viewModel.onNewFrameReady(it)
-                        binding.previewFrame.setImageBitmap(it)
-                    }
-                }
-                delay(1000)
-            }
-
-            // TODO: move the whole counter to viewModel probably
-            viewModel.onCompleteSessionButtonClicked()
+        cameraController = LifecycleCameraController(context).apply {
+            bindToLifecycle(this@FaceRecognitionFragment)
+            cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
         }
+
+        binding.cameraPreview.controller = cameraController
     }
 
     private fun setupUi() {
@@ -161,7 +145,7 @@ class FaceRecognitionFragment : Fragment() {
         binding.cameraPreview.previewStreamState.observe(viewLifecycleOwner) { streamState ->
             when (streamState) {
                 StreamState.STREAMING -> {
-                    startPeriodicRecognition()
+                    viewModel.onCameraReady()
                 }
 
                 else -> {
@@ -191,6 +175,11 @@ class FaceRecognitionFragment : Fragment() {
 
         binding.errorView.errorTitle.setText(titleResId)
         binding.errorView.errorMessage.setText(messageResId)
+    }
+
+    override fun onStop() {
+        viewModel.onStop()
+        super.onStop()
     }
 
     override fun onDestroy() {

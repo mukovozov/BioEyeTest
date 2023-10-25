@@ -10,11 +10,18 @@ import com.example.bioeyetest.face_recognition.FaceRecognitionProcessor
 import com.example.bioeyetest.face_recognition.FaceRecognitionResult
 import com.example.bioeyetest.sensor.LightSensorProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.concurrent.fixedRateTimer
 
 @HiltViewModel
 class FaceRecognitionViewModel @Inject constructor(
@@ -23,10 +30,19 @@ class FaceRecognitionViewModel @Inject constructor(
     private val navigator: Navigator,
 ) : ViewModel() {
 
+    private val _viewState = MutableStateFlow<FaceRecognitionViewState>(FaceRecognitionViewState.Preparing)
     val viewState: StateFlow<FaceRecognitionViewState>
         get() = _viewState
 
-    private val _viewState = MutableStateFlow<FaceRecognitionViewState>(FaceRecognitionViewState.Preparing)
+    private val _events = MutableSharedFlow<FaceRecognitionEvents>(extraBufferCapacity = 1)
+    val events: SharedFlow<FaceRecognitionEvents>
+        get() = _events
+
+    private var timerJob: Job? = null
+        set(value) {
+            field?.cancel()
+            field = value
+        }
 
     init {
         checkLightConditions()
@@ -45,12 +61,19 @@ class FaceRecognitionViewModel @Inject constructor(
     }
 
     fun onCompleteSessionButtonClicked() {
-        navigator.navigateTo(R.id.action_face_recognition_to_session_summary)
+        goToSessionSummaryScreen()
     }
 
     fun onRetryButtonClicked() {
-        MIN_LIGHT_LUX = 20
         checkLightConditions()
+    }
+
+    fun onCameraReady() {
+        startPeriodicRecognition()
+    }
+
+    fun onStop() {
+        timerJob = null
     }
 
     private fun checkLightConditions() {
@@ -74,10 +97,29 @@ class FaceRecognitionViewModel @Inject constructor(
         }
     }
 
+    private fun startPeriodicRecognition() {
+        timerJob = viewModelScope.launch(Dispatchers.Default) {
+            var count = 0
+            while (count < FACE_RECOGNITION_SESSION_MAX_DURATION_SECONDS) {
+                count++
+                _events.tryEmit(FaceRecognitionEvents.ProvideNextFrame)
+
+                delay(FACE_RECOGNITION_PERIOD_MILLIS)
+            }
+
+            timerJob = null
+            goToSessionSummaryScreen()
+        }
+    }
+
+    private fun goToSessionSummaryScreen() {
+        navigator.navigateTo(R.id.action_face_recognition_to_session_summary)
+    }
+
     companion object {
         private const val TAG = "FaceRecognitionViewModel"
 
-        private var MIN_LIGHT_LUX = 500
+        private const val MIN_LIGHT_LUX = 20
         private const val MAX_LIGHT_LUX = 1000
         private const val FACE_RECOGNITION_PERIOD_MILLIS = 1000L
         private const val FACE_RECOGNITION_SESSION_MAX_DURATION_SECONDS = 30L
