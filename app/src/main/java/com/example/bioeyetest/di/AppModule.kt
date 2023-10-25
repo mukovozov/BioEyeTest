@@ -4,6 +4,8 @@ import com.example.bioeyetest.Navigator
 import com.example.bioeyetest.NavigatorImpl
 import com.example.bioeyetest.csv_generation.SessionCSVGenerator
 import com.example.bioeyetest.csv_generation.SessionCSVGeneratorImpl
+import com.example.bioeyetest.face_recognition.FaceRecognitionDataRepository
+import com.example.bioeyetest.face_recognition.FaceRecognitionDataRepositoryImpl
 import com.example.bioeyetest.utils.DispatchersProvider
 import com.example.bioeyetest.utils.DispatchersProviderImpl
 import com.example.bioeyetest.utils.FileManager
@@ -18,21 +20,21 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class AppModule {
+interface AppModule {
 
     @Binds
     @Singleton
-    abstract fun bindDispatchersProvider(dispatchersProviderImpl: DispatchersProviderImpl): DispatchersProvider
+    fun bindDispatchersProvider(dispatchersProviderImpl: DispatchersProviderImpl): DispatchersProvider
 
     @Binds
     @Singleton
-    abstract fun bindNavigator(navigatorImpl: NavigatorImpl): Navigator
+    fun bindNavigator(navigatorImpl: NavigatorImpl): Navigator
 
     @Binds
     @Singleton
-    abstract fun bindFileManager(fileManagerImpl: FileManagerImpl): FileManager
+    fun bindFileManager(fileManagerImpl: FileManagerImpl): FileManager
 
     @Binds
     @Singleton
-    abstract fun bindTimeProvider(timeProviderImpl: TimeProviderImpl): TimeProvider
+    fun bindTimeProvider(timeProviderImpl: TimeProviderImpl): TimeProvider
 }

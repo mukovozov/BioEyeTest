@@ -5,17 +5,9 @@ import java.util.*
 
 private const val ISO_8601_WITHOUT_TIMEZONE_FORMAT = "yyyy-MM-dd HH:mm:ss"
 
-@Synchronized
-internal fun Long.toIso8601(): String {
+internal fun Long.format(pattern: String = ISO_8601_WITHOUT_TIMEZONE_FORMAT): String {
     val cal = Calendar.getInstance()
     cal.timeInMillis = this
-    val sdf = SimpleDateFormat(ISO_8601_WITHOUT_TIMEZONE_FORMAT, Locale.US)
+    val sdf = SimpleDateFormat(pattern, Locale.US)
     return sdf.format(cal.time)
-}
-
-@Synchronized
-internal fun String.fromIso8601(timeZone: TimeZone): Long {
-    val sdf = SimpleDateFormat(ISO_8601_WITHOUT_TIMEZONE_FORMAT, Locale.US)
-    sdf.timeZone = timeZone
-    return sdf.parse(this)?.time ?: 0
 }

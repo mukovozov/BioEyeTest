@@ -1,9 +1,9 @@
 package com.example.bioeyetest.csv_generation
 
 import com.example.bioeyetest.face_recognition.FaceRecognitionData
+import com.example.bioeyetest.utils.DispatchersProvider
 import com.example.bioeyetest.utils.FileManager
-import com.example.bioeyetest.utils.toIso8601
-import kotlinx.coroutines.Dispatchers
+import com.example.bioeyetest.utils.format
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
@@ -17,18 +17,19 @@ interface SessionCSVGenerator {
 
 class SessionCSVGeneratorImpl @Inject constructor(
     private val fileManager: FileManager,
+    private val dispatchersProvider: DispatchersProvider,
 ) : SessionCSVGenerator {
     override suspend fun generateCSV(
         data: List<FaceRecognitionData>,
         fileName: String
     ): Result<File> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatchersProvider.io) {
             val header = listOf(TIMESTAMP_CSV_HEADER, IS_FACE_DETECTED_CSV_HEADER)
                 .joinToString(postfix = NEXT_LINE)
 
 
             val formattedData = data.joinToString(separator = NEXT_LINE) {
-                listOf(it.timestampMillis.toIso8601(), it.result.binaryValue).joinToString()
+                listOf(it.timestampMillis.format(), it.result.binaryValue).joinToString()
             }
 
             val file = fileManager.getOrCreateFile("$fileName$CSV_FILE_EXTENSION")

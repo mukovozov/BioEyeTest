@@ -9,10 +9,9 @@ import com.example.bioeyetest.Navigator
 import com.example.bioeyetest.R
 import com.example.bioeyetest.csv_generation.SessionCSVGenerator
 import com.example.bioeyetest.face_recognition.FaceRecognitionDataUseCase
-import com.example.bioeyetest.face_recognition.FaceRecognitionProcessor
 import com.example.bioeyetest.face_recognition.FaceRecognitionResult
 import com.example.bioeyetest.utils.TimeProvider
-import com.example.bioeyetest.utils.toIso8601
+import com.example.bioeyetest.utils.format
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -75,7 +74,7 @@ class SessionSummaryViewModel @Inject constructor(
 
     fun onShareButtonClicked() {
         viewModelScope.launch {
-            val fileName = "$CSV_REPORT_FILE_PREFIX${timeProvider.currentTimeMillis.toIso8601()}"
+            val fileName = "$CSV_REPORT_FILE_PREFIX${timeProvider.currentTimeMillis.format(CSV_REPORT_DATE_FORMAT)}"
             val frames = faceRecognitionDataUseCase.getAll()
             sessionSummaryCsvGenerator.generateCSV(frames, fileName)
                 .onSuccess { csv ->
@@ -111,6 +110,7 @@ class SessionSummaryViewModel @Inject constructor(
 
     private companion object {
         const val TAG = "SessionSummaryViewModel"
+        const val CSV_REPORT_DATE_FORMAT = "yyyy-MM-dd_HH:mm:ss"
         const val CSV_REPORT_FILE_PREFIX = "bioeye-"
         const val FILE_PROVIDER_PATH = "com.example.bioeyetest.utils.BioEyeTestFileProvider"
     }
