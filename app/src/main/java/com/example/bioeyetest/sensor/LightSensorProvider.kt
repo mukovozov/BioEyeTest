@@ -5,21 +5,26 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import com.example.bioeyetest.utils.DispatchersProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 interface LightSensorProvider {
     val lightSensorLux: SharedFlow<Float>
     fun start()
     fun stop()
 
-//    suspend fun requestSingleUpdate(): Float
+    suspend fun requestSingleUpdate(): Float
 }
 
 class LightSensorProviderImpl @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val dispatchersProvider: DispatchersProvider,
 ) : LightSensorProvider {
     override val lightSensorLux = MutableSharedFlow<Float>(extraBufferCapacity = 1)
 
@@ -33,33 +38,41 @@ class LightSensorProviderImpl @Inject constructor(
         }
 
         override fun onSensorChanged(sensorEvent: SensorEvent?) {
-            sensorEvent?.values?.get(0)?.let {
+            sensorEvent?.values?.firstOrNull()?.let {
                 lightSensorLux.tryEmit(it)
             }
         }
     }
 
     override fun start() {
-        registerListener()
+        sensorManager.registerListener(listener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
     override fun stop() {
-        unregisterListener()
+        sensorManager.unregisterListener(listener)
     }
 
-//    override suspend fun requestSingleUpdate(): Float {
-//
-//    }
-
-    private fun registerListener() {
-        sensorManager.registerListener(
-            listener,
-            lightSensor,
-            SensorManager.SENSOR_DELAY_NORMAL
-        )
+    override suspend fun requestSingleUpdate(): Float {
+        return withContext(dispatchersProvider.default) {
+            makeSingleRequest()
+        }
     }
 
-    private fun unregisterListener() {
-        sensorManager.unregisterListener(listener, lightSensor)
+    private suspend fun makeSingleRequest(): Float {
+        return suspendCoroutine { continuation ->
+            sensorManager.registerListener(object : SensorEventListener {
+                override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+                    // Do nothing
+                }
+
+                override fun onSensorChanged(sensorEvent: SensorEvent?) {
+                    sensorEvent?.values?.firstOrNull()?.let { value ->
+                        lightSensorLux.tryEmit(value)
+                        sensorManager.unregisterListener(this)
+                        continuation.resume(value)
+                    }
+                }
+            }, lightSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        }
     }
 }

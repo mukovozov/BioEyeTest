@@ -53,9 +53,8 @@ class FaceRecognitionViewModel @Inject constructor(
     }
 
     private fun checkLightConditions() {
-        lightSensorProvider.start()
         viewModelScope.launch {
-            val lux = lightSensorProvider.lightSensorLux.first()
+            val lux = lightSensorProvider.requestSingleUpdate()
             val newViewState = when {
                 lux < MIN_LIGHT_LUX -> {
                     FaceRecognitionViewState.PreparationFailed(PreparationFailedReason.ROOM_IS_TOO_DARK)
@@ -70,8 +69,6 @@ class FaceRecognitionViewModel @Inject constructor(
                 }
             }
 
-            lightSensorProvider.stop()
-
             _viewState.value = newViewState
         }
     }
@@ -79,8 +76,7 @@ class FaceRecognitionViewModel @Inject constructor(
     companion object {
         private const val TAG = "FaceRecognitionViewModel"
 
-        // TODO: return 20
-        private const val MIN_LIGHT_LUX = 0
+        private const val MIN_LIGHT_LUX = 20
         private const val MAX_LIGHT_LUX = 1000
         private const val FACE_RECOGNITION_PERIOD_MILLIS = 1000L
         private const val FACE_RECOGNITION_SESSION_MAX_DURATION_SECONDS = 30L
