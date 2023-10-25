@@ -1,16 +1,10 @@
 package com.example.bioeyetest.ui.recognition
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.camera.view.PreviewView.StreamState
@@ -44,95 +38,61 @@ class FaceRecognitionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupUi()
+        initUi()
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.events.collect { events ->
-                    when (events) {
-                        is FaceRecognitionEvents.ProvideNextFrame -> {
-                            binding.cameraPreview.bitmap?.let { bitmap ->
-                                viewModel.onNewFrameReady(bitmap)
-                                binding.previewFrame.setImageBitmap(bitmap)
-                            }
-                        }
+                launch {
+                    viewModel.events.collect { events ->
+                        onNewEvent(events)
                     }
                 }
-            }
-        }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.viewState.collect { viewState ->
-                    when (viewState) {
-                        is FaceRecognitionViewState.Recognition -> {
-                            // do nothing for now
-                            // TODO: make it look less ugly
-                            binding.errorView.errorView.isVisible = false
-                            binding.recognitionResult.isVisible = false
-                            binding.cameraPreview.isVisible = true
-                            binding.completeButton.isVisible = true
-
-                            when (viewState.detectionResult) {
-                                FaceRecognitionResult.NO_RESULT -> {
-                                    binding.recognitionResult.isVisible = false
-                                }
-
-                                FaceRecognitionResult.FACE_DETECTED -> {
-                                    binding.recognitionResult.isVisible = true
-                                    binding.faceRecognitionResultIcon.setImageResource(R.drawable.ic_face_recognition_success)
-                                    binding.faceRecognitionResultTitle.setText(R.string.face_recognition_success_title)
-                                    binding.faceRecognitionResultTitle.setTextColor(
-                                        ContextCompat.getColor(
-                                            requireContext(),
-                                            R.color.face_recognition_success
-                                        )
-                                    )
-                                }
-
-                                FaceRecognitionResult.NO_FACE_DETECTED -> {
-                                    binding.recognitionResult.isVisible = true
-                                    binding.faceRecognitionResultIcon.setImageResource(R.drawable.ic_face_recognition_failure)
-                                    binding.faceRecognitionResultTitle.setText(R.string.face_recognition_failure_title)
-                                    binding.faceRecognitionResultTitle.setTextColor(
-                                        ContextCompat.getColor(
-                                            requireContext(),
-                                            R.color.face_recognition_failure
-                                        )
-                                    )
-                                }
-                            }
-                        }
-
-                        is FaceRecognitionViewState.PreparationFailed -> {
-                            showError(viewState.reason)
-                        }
-
-                        is FaceRecognitionViewState.Preparing -> {
-                            // do nothing
-                            binding.errorView.errorView.isVisible = false
-                            binding.cameraPreview.isVisible = false
-                            binding.recognitionResult.isVisible = false
-                            binding.completeButton.isVisible = false
-                        }
+                launch {
+                    viewModel.viewState.collect { viewState ->
+                        render(viewState)
                     }
                 }
             }
         }
     }
 
-    private fun startCamera() {
-        val context = context ?: return
-
-        cameraController = LifecycleCameraController(context).apply {
-            bindToLifecycle(this@FaceRecognitionFragment)
-            cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+    private fun onNewEvent(events: FaceRecognitionEvents) {
+        when (events) {
+            is FaceRecognitionEvents.ProvideNextFrame -> {
+                // Not sure if it's an optimal solution to extract the frame from the camera,
+                // but the easiest I could find.
+                // Tried using ImageAnalyzer as well, but it seems like it's more suitable
+                // for continuous analysis during a camera session,
+                // but not processing once per second as we do
+                binding.cameraPreview.bitmap?.let { bitmap ->
+                    viewModel.onNewFrameReady(bitmap)
+                    binding.previewFrame.setImageBitmap(bitmap)
+                }
+            }
         }
-
-        binding.cameraPreview.controller = cameraController
     }
 
-    private fun setupUi() {
+    private fun render(viewState: FaceRecognitionViewState) {
+        when (viewState) {
+            is FaceRecognitionViewState.Recognition -> {
+                showFaceRecognitionState(viewState)
+            }
+
+            is FaceRecognitionViewState.PreparationFailed -> {
+                showErrorState(viewState.reason)
+            }
+
+            is FaceRecognitionViewState.Preparing -> {
+                binding.errorView.errorView.isVisible = false
+                binding.cameraPreview.isVisible = false
+                binding.recognitionResult.isVisible = false
+                binding.completeButton.isVisible = false
+            }
+        }
+    }
+
+    private fun initUi() {
         binding.errorView.retryButton.setOnClickListener {
             viewModel.onRetryButtonClicked()
         }
@@ -154,14 +114,70 @@ class FaceRecognitionFragment : Fragment() {
             }
         }
 
-        startCamera()
+        prepareCamera()
     }
 
-    private fun showError(reason: PreparationFailedReason) {
+    private fun prepareCamera() {
+        val context = context ?: return
+
+        cameraController = LifecycleCameraController(context).apply {
+            bindToLifecycle(this@FaceRecognitionFragment)
+            cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+        }
+
+        binding.cameraPreview.controller = cameraController
+    }
+
+    private fun showFaceRecognitionState(viewState: FaceRecognitionViewState.Recognition) {
+        binding.errorView.errorView.isVisible = false
         binding.recognitionResult.isVisible = false
-        binding.errorView.errorView.isVisible = true
-        binding.cameraPreview.isVisible = false
-        binding.completeButton.isVisible = false
+        binding.cameraPreview.isVisible = true
+        binding.completeButton.isVisible = true
+
+        when (viewState.detectionResult) {
+            FaceRecognitionResult.NO_RESULT -> {
+                binding.recognitionResult.isVisible = false
+            }
+
+            FaceRecognitionResult.FACE_DETECTED -> {
+                showFaceDetectedState()
+            }
+
+            FaceRecognitionResult.NO_FACE_DETECTED -> {
+                showNoFaceDetectedState()
+            }
+        }
+    }
+
+    private fun showFaceDetectedState() = with(binding) {
+        recognitionResult.isVisible = true
+        faceRecognitionResultIcon.setImageResource(R.drawable.ic_face_recognition_success)
+        faceRecognitionResultTitle.setText(R.string.face_recognition_success_title)
+        faceRecognitionResultTitle.setTextColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.face_recognition_success
+            )
+        )
+    }
+
+    private fun showNoFaceDetectedState() = with(binding) {
+        recognitionResult.isVisible = true
+        faceRecognitionResultIcon.setImageResource(R.drawable.ic_face_recognition_failure)
+        faceRecognitionResultTitle.setText(R.string.face_recognition_failure_title)
+        faceRecognitionResultTitle.setTextColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.face_recognition_failure
+            )
+        )
+    }
+
+    private fun showErrorState(reason: PreparationFailedReason) = with(binding) {
+        recognitionResult.isVisible = false
+        errorView.errorView.isVisible = true
+        cameraPreview.isVisible = false
+        completeButton.isVisible = false
 
         val (titleResId, messageResId) = when (reason) {
             PreparationFailedReason.ROOM_IS_TOO_BRIGHT -> {
@@ -173,8 +189,8 @@ class FaceRecognitionFragment : Fragment() {
             }
         }
 
-        binding.errorView.errorTitle.setText(titleResId)
-        binding.errorView.errorMessage.setText(messageResId)
+        errorView.errorTitle.setText(titleResId)
+        errorView.errorMessage.setText(messageResId)
     }
 
     override fun onStop() {
@@ -185,13 +201,5 @@ class FaceRecognitionFragment : Fragment() {
     override fun onDestroy() {
         _binding = null
         super.onDestroy()
-    }
-
-    companion object {
-        private const val TAG = "FaceRecognitionFragment"
-
-        fun newInstance(): FaceRecognitionFragment {
-            return FaceRecognitionFragment()
-        }
     }
 }

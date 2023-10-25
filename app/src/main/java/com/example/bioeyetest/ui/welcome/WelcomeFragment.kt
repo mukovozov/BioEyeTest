@@ -29,11 +29,8 @@ class WelcomeFragment : Fragment() {
             if (isGranted) {
                 viewModel.onLaunchButtonClicked()
             } else {
-                // Explain to the user that the feature is unavailable because the
-                // feature requires a permission that the user has denied. At the
-                // same time, respect the user's decision. Don't link to system
-                // settings in an effort to convince the user to change their
-                // decision.
+                // I decided not to handle denying permission to save the time.
+                // In real app here could be an explanation of what do we need the camera for.
             }
         }
 
@@ -46,11 +43,11 @@ class WelcomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.launchButton.setOnClickListener {
-            when {
+            when (PackageManager.PERMISSION_GRANTED) {
                 ContextCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.CAMERA
-                ) == PackageManager.PERMISSION_GRANTED -> {
+                ) -> {
                     viewModel.onLaunchButtonClicked()
                 }
                 else -> {
@@ -63,12 +60,6 @@ class WelcomeFragment : Fragment() {
     override fun onDestroy() {
         _binding = null
         super.onDestroy()
-    }
-
-    companion object {
-        fun newInstance(): WelcomeFragment {
-            return WelcomeFragment()
-        }
     }
 
 }

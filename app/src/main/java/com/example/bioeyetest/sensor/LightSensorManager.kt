@@ -14,18 +14,18 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-interface LightSensorProvider {
+interface LightSensorManager {
     val lightSensorLux: SharedFlow<Float>
-    fun start()
-    fun stop()
+    fun startUpdates()
+    fun stopUpdates()
 
     suspend fun requestSingleUpdate(): Float
 }
 
-class LightSensorProviderImpl @Inject constructor(
+class LightSensorManagerImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val dispatchersProvider: DispatchersProvider,
-) : LightSensorProvider {
+) : LightSensorManager {
     override val lightSensorLux = MutableSharedFlow<Float>(extraBufferCapacity = 1)
 
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -44,11 +44,11 @@ class LightSensorProviderImpl @Inject constructor(
         }
     }
 
-    override fun start() {
+    override fun startUpdates() {
         sensorManager.registerListener(listener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
-    override fun stop() {
+    override fun stopUpdates() {
         sensorManager.unregisterListener(listener)
     }
 

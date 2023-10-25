@@ -8,7 +8,7 @@ import com.example.bioeyetest.Navigator
 import com.example.bioeyetest.R
 import com.example.bioeyetest.face_recognition.FaceRecognitionProcessor
 import com.example.bioeyetest.face_recognition.FaceRecognitionResult
-import com.example.bioeyetest.sensor.LightSensorProvider
+import com.example.bioeyetest.sensor.LightSensorManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -17,15 +17,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.concurrent.fixedRateTimer
 
 @HiltViewModel
 class FaceRecognitionViewModel @Inject constructor(
-    private val lightSensorProvider: LightSensorProvider,
+    private val lightSensorManager: LightSensorManager,
     private val faceRecognitionProcessor: FaceRecognitionProcessor,
     private val navigator: Navigator,
 ) : ViewModel() {
@@ -78,7 +75,7 @@ class FaceRecognitionViewModel @Inject constructor(
 
     private fun checkLightConditions() {
         viewModelScope.launch {
-            val lux = lightSensorProvider.requestSingleUpdate()
+            val lux = lightSensorManager.requestSingleUpdate()
             val newViewState = when {
                 lux < MIN_LIGHT_LUX -> {
                     FaceRecognitionViewState.PreparationFailed(PreparationFailedReason.ROOM_IS_TOO_DARK)

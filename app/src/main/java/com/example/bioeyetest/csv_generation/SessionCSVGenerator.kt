@@ -23,11 +23,11 @@ class SessionCSVGeneratorImpl @Inject constructor(
         fileName: String
     ): Result<File> {
         return withContext(Dispatchers.IO) {
-            val header = listOf("timestamp", "is_face_detected")
-                .joinToString(separator = ", ", postfix = "\n")
+            val header = listOf(TIMESTAMP_CSV_HEADER, IS_FACE_DETECTED_CSV_HEADER)
+                .joinToString(postfix = NEXT_LINE)
 
 
-            val formattedData = data.joinToString(separator = "\n") {
+            val formattedData = data.joinToString(separator = NEXT_LINE) {
                 listOf(it.timestampMillis.toIso8601(), it.result.binaryValue).joinToString()
             }
 
@@ -39,6 +39,10 @@ class SessionCSVGeneratorImpl @Inject constructor(
     }
 
     private companion object {
+        const val TIMESTAMP_CSV_HEADER = "timestamp"
+        const val IS_FACE_DETECTED_CSV_HEADER = "is_face_detected"
+        const val NEXT_LINE = "\n"
+
         const val CSV_FILE_EXTENSION = ".csv"
     }
 }
