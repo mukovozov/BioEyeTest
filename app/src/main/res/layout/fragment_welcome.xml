@@ -20,6 +20,7 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:background="@color/white"
+        android:layout_marginTop="5dp"
         app:layout_constraintEnd_toEndOf="@id/logo_icon"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/logo_icon" />
