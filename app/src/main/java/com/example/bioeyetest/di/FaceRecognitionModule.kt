@@ -2,8 +2,6 @@ package com.example.bioeyetest.di
 
 import com.example.bioeyetest.data.face_recognition.FaceRecognitionDataRepository
 import com.example.bioeyetest.data.face_recognition.FaceRecognitionDataRepositoryImpl
-import com.example.bioeyetest.domain.face_recognition.FaceRecognitionDataUseCase
-import com.example.bioeyetest.domain.face_recognition.FaceRecognitionDataUseCaseImpl
 import com.example.bioeyetest.domain.face_recognition.FaceRecognitionProcessor
 import com.example.bioeyetest.domain.face_recognition.FaceRecognitionProcessorImpl
 import com.example.bioeyetest.data.sensor.LightSensorManager
@@ -32,10 +30,6 @@ interface FaceRecognitionModule {
     @Binds
     @Singleton
     fun bindFaceRecognitionRepository(faceRecognitionDataRepositoryImpl: FaceRecognitionDataRepositoryImpl): FaceRecognitionDataRepository
-
-    @Binds
-    @Singleton
-    fun bindFaceRecognitionDataUseCase(faceRecognitionDataUseCaseImpl: FaceRecognitionDataUseCaseImpl): FaceRecognitionDataUseCase
 
     companion object {
         @Provides

@@ -25,7 +25,7 @@ class FaceRecognitionDataRepositoryImpl @Inject constructor(
     private val mutex = Mutex()
 
     override suspend fun save(data: FaceRecognitionData) {
-        withContext(dispatchersProvider.default) {
+        withContext(dispatchersProvider.io) {
             mutex.withLock {
                 cache.add(data)
             }
@@ -37,7 +37,7 @@ class FaceRecognitionDataRepositoryImpl @Inject constructor(
     }
 
     override suspend fun clear() {
-        withContext(dispatchersProvider.default) {
+        withContext(dispatchersProvider.io) {
             mutex.withLock {
                 cache.clear()
             }

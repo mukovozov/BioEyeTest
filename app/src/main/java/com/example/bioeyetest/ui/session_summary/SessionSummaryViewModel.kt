@@ -8,10 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.bioeyetest.ui.Navigator
 import com.example.bioeyetest.R
 import com.example.bioeyetest.domain.csv_generation.SessionCSVGenerator
-import com.example.bioeyetest.domain.face_recognition.FaceRecognitionDataUseCase
 import com.example.bioeyetest.data.face_recognition.FaceRecognitionResult
 import com.example.bioeyetest.core.TimeProvider
 import com.example.bioeyetest.core.format
+import com.example.bioeyetest.data.face_recognition.FaceRecognitionDataRepository
+import com.example.bioeyetest.ui.recognition.UiFaceRecognitionResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -26,7 +27,7 @@ import javax.inject.Inject
 @SuppressLint("StaticFieldLeak")
 class SessionSummaryViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val faceRecognitionDataUseCase: FaceRecognitionDataUseCase,
+    private val faceRecognitionDataRepository: FaceRecognitionDataRepository,
     private val sessionSummaryCsvGenerator: SessionCSVGenerator,
     private val timeProvider: TimeProvider,
     private val navigator: Navigator,
@@ -43,7 +44,7 @@ class SessionSummaryViewModel @Inject constructor(
     init {
         viewModelScope.launch {
 
-            val processedFrames = faceRecognitionDataUseCase.getAll()
+            val processedFrames = faceRecognitionDataRepository.getAll()
 
             val total = processedFrames.size
             val (face, noFace) = processedFrames.fold(0 to 0) { acc, faceRecognitionData ->
@@ -71,7 +72,7 @@ class SessionSummaryViewModel @Inject constructor(
     fun onShareButtonClicked() {
         viewModelScope.launch {
             val fileName = "$CSV_REPORT_FILE_PREFIX${timeProvider.currentTimeMillis.format(CSV_REPORT_DATE_FORMAT)}"
-            val frames = faceRecognitionDataUseCase.getAll()
+            val frames = faceRecognitionDataRepository.getAll()
             sessionSummaryCsvGenerator.generateCSV(frames, fileName)
                 .onSuccess { csv ->
                     val contentUri = FileProvider.getUriForFile(
@@ -99,7 +100,7 @@ class SessionSummaryViewModel @Inject constructor(
 
     private fun cleanUpAndGoToWelcomeScreen() {
         viewModelScope.launch {
-            faceRecognitionDataUseCase.clear()
+            faceRecognitionDataRepository.clear()
 
             navigator.navigateTo(R.id.action_summaryFragment_to_welcomeFragment)
         }

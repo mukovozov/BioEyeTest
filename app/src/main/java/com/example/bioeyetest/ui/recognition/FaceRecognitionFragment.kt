@@ -197,8 +197,8 @@ class FaceRecognitionFragment : Fragment() {
         super.onStop()
     }
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
         _binding = null
-        super.onDestroy()
+        super.onDestroyView()
     }
 }
