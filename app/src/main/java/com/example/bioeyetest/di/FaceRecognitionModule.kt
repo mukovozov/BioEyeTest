@@ -21,7 +21,7 @@ import javax.inject.Singleton
 interface FaceRecognitionModule {
 
     @Binds
-    abstract fun bindLightSensorManager(lightSensorManagerImpl: LightSensorManagerImpl): LightSensorManager
+    fun bindLightSensorManager(lightSensorManagerImpl: LightSensorManagerImpl): LightSensorManager
 
     @Binds
     @Singleton

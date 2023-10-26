@@ -17,6 +17,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.bioeyetest.R
 import com.example.bioeyetest.databinding.FragmentFaceRecognitionBinding
+import com.example.bioeyetest.ui.recognition.models.PreparationFailedReason
+import com.example.bioeyetest.ui.recognition.models.UiFaceRecognitionResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -56,17 +58,24 @@ class FaceRecognitionFragment : Fragment() {
         }
     }
 
+    override fun onStop() {
+        viewModel.onStop()
+        super.onStop()
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
+
     private fun onNewEvent(events: FaceRecognitionEvents) {
         when (events) {
             is FaceRecognitionEvents.ProvideNextFrame -> {
-                // Not sure if it's an optimal solution to extract the frame from the camera,
-                // but the easiest I could find.
-                // Tried using ImageAnalyzer as well, but it seems like it's more suitable
-                // for continuous analysis during a camera session,
-                // but not processing once per second as we do
+                //  Not an optimal solution performance-wise to extract the frame from the camera,
+                //  but the easiest I could find after trying to make ImageAnalyzer/ImageCapture work for me
+                //  without saving image to the disc.
                 binding.cameraPreview.bitmap?.let { bitmap ->
                     viewModel.onNewFrameReady(bitmap)
-                    binding.previewFrame.setImageBitmap(bitmap)
                 }
             }
         }
@@ -83,10 +92,7 @@ class FaceRecognitionFragment : Fragment() {
             }
 
             is FaceRecognitionViewState.Preparing -> {
-                binding.errorView.errorView.isVisible = false
-                binding.cameraPreview.isVisible = false
-                binding.recognitionResult.isVisible = false
-                binding.completeButton.isVisible = false
+                showEmptyState()
             }
         }
     }
@@ -192,13 +198,10 @@ class FaceRecognitionFragment : Fragment() {
         errorView.errorMessage.setText(messageResId)
     }
 
-    override fun onStop() {
-        viewModel.onStop()
-        super.onStop()
-    }
-
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
+    private fun showEmptyState() {
+        binding.errorView.errorView.isVisible = false
+        binding.cameraPreview.isVisible = false
+        binding.recognitionResult.isVisible = false
+        binding.completeButton.isVisible = false
     }
 }

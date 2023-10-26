@@ -1,6 +1,6 @@
 Hi!
 
-here I want to write notes what architectural and design decisions I made and why.
+Here I want to write notes what architectural and design decisions I made and why.
 
 Architecture:
 - Split the code into 3 layers(data, domain, ui). I wouldn't do that in the production app. 
@@ -27,3 +27,5 @@ Design:
 - Face/No face detected images have a different size (60px vs 70px). Green smile has padding 10px and red one doesn't. 
     You could notice them jumping a little bit on the 2 screen, but I decided not to bother you or your designer to fix it.
     Changing size in SVG or ImageView itself doesn't help since the icons built differently(vector images)
+
+- Looks like ':' is forbidden for file names since the system drops them automatically, so I made the date format like: yyyy-MM-dd_HHmmss

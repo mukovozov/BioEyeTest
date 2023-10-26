@@ -15,7 +15,7 @@ interface FaceRecognitionDataRepository {
     suspend fun clear()
 }
 
-internal class FaceRecognitionDataRepositoryImpl @Inject constructor(
+class FaceRecognitionDataRepositoryImpl @Inject constructor(
     private val dispatchersProvider: DispatchersProvider
 ) : FaceRecognitionDataRepository {
 

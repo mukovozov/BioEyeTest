@@ -10,6 +10,8 @@ import com.example.bioeyetest.core.coroutines.DispatchersProvider
 import com.example.bioeyetest.data.face_recognition.FaceRecognitionResult
 import com.example.bioeyetest.domain.face_recognition.FaceRecognitionProcessor
 import com.example.bioeyetest.data.sensor.LightSensorManager
+import com.example.bioeyetest.ui.recognition.models.PreparationFailedReason
+import com.example.bioeyetest.ui.recognition.models.UiFaceRecognitionResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.TimeoutCancellationException

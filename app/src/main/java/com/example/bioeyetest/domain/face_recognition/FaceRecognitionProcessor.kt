@@ -18,7 +18,7 @@ interface FaceRecognitionProcessor {
     suspend fun process(bitmap: Bitmap): Result<FaceRecognitionResult>
 }
 
-internal class FaceRecognitionProcessorImpl @Inject constructor(
+class FaceRecognitionProcessorImpl @Inject constructor(
     private val faceRecognitionDataRepository: FaceRecognitionDataRepository,
     private val faceDetector: FaceDetector,
     private val timeProvider: TimeProvider,

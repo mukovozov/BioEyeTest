@@ -10,7 +10,6 @@ import java.io.FileWriter
 import javax.inject.Inject
 
 interface FileManager {
-
     suspend fun getOrCreateFile(fileName: String): File
     suspend fun writeFile(file: File, data: String): Result<Unit>
 }
@@ -20,6 +19,7 @@ class FileManagerImpl @Inject constructor(
     private val dispatchersProvider: DispatchersProvider,
 ) : FileManager {
 
+    //Could be injected from outside, but we don't need to store different files in different folders, so it's here
     private val baseDirPath = context.cacheDir.absolutePath
 
     override suspend fun getOrCreateFile(fileName: String): File {

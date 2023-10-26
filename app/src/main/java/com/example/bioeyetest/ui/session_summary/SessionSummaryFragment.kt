@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,20 +59,7 @@ class SessionSummaryFragment : Fragment() {
                 }
 
                 launch {
-                    viewModel.viewState.collect { viewState ->
-                        binding.summaryDurationTotal.text = getString(
-                            R.string.session_summary_duration_title,
-                            viewState.sessionTotalDurationSeconds
-                        )
-                        binding.summaryDurationSuccess.text = getString(
-                            R.string.session_summary_face_detected_title,
-                            viewState.faceDetectedDurationSeconds
-                        )
-                        binding.summaryDurationFail.text = getString(
-                            R.string.session_summary_no_face_detected_title,
-                            viewState.noFaceDetectedDurationSeconds
-                        )
-                    }
+                    render()
                 }
             }
         }
@@ -95,7 +83,18 @@ class SessionSummaryFragment : Fragment() {
     private fun onNewEvent(event: SessionSummaryEvents) {
         when (event) {
             is SessionSummaryEvents.ShareCSV -> {
-                val intent = context?.createSharedIntent(event.contentUri)
+                val context = context ?: let {
+                    Log.e(TAG, "Context is null!")
+                    return
+                }
+
+                val intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    setDataAndType(event.contentUri, context.contentResolver.getType(event.contentUri))
+                    putExtra(Intent.EXTRA_STREAM, event.contentUri)
+                }
+
                 startActivity(
                     Intent.createChooser(
                         intent,
@@ -110,14 +109,24 @@ class SessionSummaryFragment : Fragment() {
         }
     }
 
-    // Ideally should be moved to some utils file,
-    // but since it's been used only here -- I decided to keep it closer to implementation
-    private fun Context.createSharedIntent(uri: Uri): Intent {
-        return Intent().apply {
-            action = Intent.ACTION_SEND
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            setDataAndType(uri, contentResolver.getType(uri))
-            putExtra(Intent.EXTRA_STREAM, uri)
+    private suspend fun render() {
+        viewModel.viewState.collect { viewState ->
+            binding.summaryDurationTotal.text = getString(
+                R.string.session_summary_duration_title,
+                viewState.sessionTotalDurationSeconds
+            )
+            binding.summaryDurationSuccess.text = getString(
+                R.string.session_summary_face_detected_title,
+                viewState.faceDetectedDurationSeconds
+            )
+            binding.summaryDurationFail.text = getString(
+                R.string.session_summary_no_face_detected_title,
+                viewState.noFaceDetectedDurationSeconds
+            )
         }
+    }
+
+    companion object {
+        private const val TAG = "SessionSummaryFragment"
     }
 }

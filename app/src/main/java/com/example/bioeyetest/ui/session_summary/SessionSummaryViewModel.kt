@@ -107,8 +107,8 @@ class SessionSummaryViewModel @Inject constructor(
 
     private companion object {
         const val TAG = "SessionSummaryViewModel"
-        const val CSV_REPORT_DATE_FORMAT = "yyyy-MM-dd_HH:mm:ss"
+        const val CSV_REPORT_DATE_FORMAT = "yyyy-MM-dd_HHmmss"
         const val CSV_REPORT_FILE_PREFIX = "bioeye-"
-        const val FILE_PROVIDER_PATH = "com.example.bioeyetest.utils.BioEyeTestFileProvider"
+        const val FILE_PROVIDER_PATH = "com.example.bioeyetest.core.BioEyeTestFileProvider"
     }
 }
