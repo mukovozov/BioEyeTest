@@ -22,4 +22,5 @@
     <string name="session_summary_no_face_detected_title">No Face: %d sec</string>
     <string name="session_summary_done_button_text">Done</string>
     <string name="session_summary_share_chooser_title">Choose an app</string>
+    <string name="session_summary_generate_csv_error_message">Failed to generate report</string>
 </resources>

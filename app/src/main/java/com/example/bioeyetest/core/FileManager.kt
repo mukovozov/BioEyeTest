@@ -2,7 +2,6 @@ package com.example.bioeyetest.core
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.BufferedWriter
 import java.io.File
@@ -16,13 +15,14 @@ interface FileManager {
 }
 
 class FileManagerImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val dispatchersProvider: DispatchersProvider,
 ) : FileManager {
 
     private val baseDirPath = context.cacheDir.absolutePath
 
     override suspend fun getOrCreateFile(fileName: String): File {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatchersProvider.io) {
             val file = File(baseDirPath, fileName)
 
             if (file.parentFile?.exists() == false) {
@@ -30,6 +30,7 @@ class FileManagerImpl @Inject constructor(
             }
 
             if (!file.exists()) {
+                // Lint issue, can't recognise I use Dispatchers.IO under the hood
                 file.createNewFile()
             }
 
@@ -38,8 +39,9 @@ class FileManagerImpl @Inject constructor(
     }
 
     override suspend fun writeFile(file: File, data: String): Result<Unit> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatchersProvider.io) {
             try {
+                // Lint issue, can't recognise I use Dispatchers.IO under the hood
                 FileWriter(file).use { fos ->
                     BufferedWriter(fos).use {
                         it.write(data)

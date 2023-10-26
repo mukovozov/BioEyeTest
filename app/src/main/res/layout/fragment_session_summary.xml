@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black">
+    android:background="?colorPrimary">
 
     <ImageView
         android:id="@+id/share_button"
@@ -17,49 +17,47 @@
 
     <TextView
         android:id="@+id/summary_title"
+        style="@style/RegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
         android:text="@string/session_summary_title"
-        android:textColor="@color/white"
-        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/share_button" />
 
     <TextView
         android:id="@+id/summary_duration_total"
+        style="@style/SmallText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="21dp"
         android:layout_marginTop="110dp"
         android:text="@string/session_summary_duration_title"
-        android:textColor="@color/white"
-        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/summary_title" />
 
     <TextView
         android:id="@+id/summary_duration_success"
+        style="@style/SmallText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="21dp"
         android:layout_marginTop="50dp"
         android:text="@string/session_summary_face_detected_title"
         android:textColor="@color/face_recognition_success"
-        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/summary_duration_total" />
 
     <TextView
         android:id="@+id/summary_duration_fail"
+        style="@style/SmallText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="21dp"
         android:layout_marginTop="50dp"
         android:text="@string/session_summary_no_face_detected_title"
         android:textColor="@color/face_recognition_failure"
-        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/summary_duration_success" />
 

@@ -1,9 +1,7 @@
 package com.example.bioeyetest.ui.recognition
 
-import com.example.bioeyetest.data.face_recognition.FaceRecognitionResult
-
 sealed class FaceRecognitionViewState {
-    data class Recognition(val detectionResult: FaceRecognitionResult) : FaceRecognitionViewState()
+    data class Recognition(val detectionResult: UiFaceRecognitionResult) : FaceRecognitionViewState()
     object Preparing : FaceRecognitionViewState()
 
     data class PreparationFailed(val reason: PreparationFailedReason) : FaceRecognitionViewState()

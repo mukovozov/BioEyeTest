@@ -5,31 +5,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/error_view"
-    android:background="@color/black">
+    android:background="?colorPrimary">
 
     <TextView
+        style="@style/RegularText"
         android:id="@+id/error_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="22dp"
         android:layout_marginTop="183dp"
         android:gravity="center"
-        android:textColor="@color/white"
-        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/face_recognition_room_is_too_bright_error_title" />
 
     <TextView
+        style="@style/DescriptionText"
         android:id="@+id/error_message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="18dp"
         android:layout_marginTop="40dp"
         android:gravity="center"
-        android:textColor="@color/white"
-        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/error_title"

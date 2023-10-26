@@ -15,6 +15,8 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 interface LightSensorManager {
+
+    // These methods are not necessary, but I think they make sense since system sensor manager provides updates.
     val lightSensorLux: SharedFlow<Float>
     fun startUpdates()
     fun stopUpdates()

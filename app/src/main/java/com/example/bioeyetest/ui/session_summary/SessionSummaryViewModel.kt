@@ -55,10 +55,6 @@ class SessionSummaryViewModel @Inject constructor(
                     FaceRecognitionResult.NO_FACE_DETECTED -> {
                         acc.copy(second = acc.second + 1)
                     }
-
-                    else -> {
-                        acc
-                    }
                 }
             }
 
@@ -87,7 +83,8 @@ class SessionSummaryViewModel @Inject constructor(
                     _events.emit(SessionSummaryEvents.ShareCSV(contentUri))
                 }
                 .onFailure {
-                    // TODO: send toast event
+                    val message = context.getString(R.string.session_summary_generate_csv_error_message)
+                    _events.emit(SessionSummaryEvents.ShowMessage(message))
                 }
         }
     }

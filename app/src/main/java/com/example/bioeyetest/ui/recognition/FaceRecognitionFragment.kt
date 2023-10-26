@@ -17,7 +17,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.bioeyetest.R
 import com.example.bioeyetest.databinding.FragmentFaceRecognitionBinding
-import com.example.bioeyetest.data.face_recognition.FaceRecognitionResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -31,7 +30,7 @@ class FaceRecognitionFragment : Fragment() {
 
     private lateinit var cameraController: LifecycleCameraController
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentFaceRecognitionBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -135,15 +134,15 @@ class FaceRecognitionFragment : Fragment() {
         binding.completeButton.isVisible = true
 
         when (viewState.detectionResult) {
-            FaceRecognitionResult.NO_RESULT -> {
+            UiFaceRecognitionResult.NO_RESULT -> {
                 binding.recognitionResult.isVisible = false
             }
 
-            FaceRecognitionResult.FACE_DETECTED -> {
+            UiFaceRecognitionResult.FACE_DETECTED -> {
                 showFaceDetectedState()
             }
 
-            FaceRecognitionResult.NO_FACE_DETECTED -> {
+            UiFaceRecognitionResult.NO_FACE_DETECTED -> {
                 showNoFaceDetectedState()
             }
         }

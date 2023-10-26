@@ -6,18 +6,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bioeyetest.ui.Navigator
 import com.example.bioeyetest.R
-import com.example.bioeyetest.domain.face_recognition.FaceRecognitionProcessor
+import com.example.bioeyetest.core.DispatchersProvider
 import com.example.bioeyetest.data.face_recognition.FaceRecognitionResult
+import com.example.bioeyetest.domain.face_recognition.FaceRecognitionProcessor
 import com.example.bioeyetest.data.sensor.LightSensorManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,6 +27,7 @@ class FaceRecognitionViewModel @Inject constructor(
     private val lightSensorManager: LightSensorManager,
     private val faceRecognitionProcessor: FaceRecognitionProcessor,
     private val navigator: Navigator,
+    private val dispatchersProvider: DispatchersProvider,
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow<FaceRecognitionViewState>(FaceRecognitionViewState.Preparing)
@@ -48,6 +51,12 @@ class FaceRecognitionViewModel @Inject constructor(
     fun onNewFrameReady(frame: Bitmap) {
         viewModelScope.launch {
             faceRecognitionProcessor.process(frame)
+                .map {
+                    when (it) {
+                        FaceRecognitionResult.NO_FACE_DETECTED -> UiFaceRecognitionResult.NO_FACE_DETECTED
+                        FaceRecognitionResult.FACE_DETECTED -> UiFaceRecognitionResult.FACE_DETECTED
+                    }
+                }
                 .onSuccess { result ->
                     _viewState.value = FaceRecognitionViewState.Recognition(result)
                 }
@@ -86,7 +95,7 @@ class FaceRecognitionViewModel @Inject constructor(
                 }
 
                 else -> {
-                    FaceRecognitionViewState.Recognition(FaceRecognitionResult.NO_RESULT)
+                    FaceRecognitionViewState.Recognition(UiFaceRecognitionResult.NO_RESULT)
                 }
             }
 
@@ -95,17 +104,19 @@ class FaceRecognitionViewModel @Inject constructor(
     }
 
     private fun startPeriodicRecognition() {
-        timerJob = viewModelScope.launch(Dispatchers.Default) {
-            var count = 0
-            while (count < FACE_RECOGNITION_SESSION_MAX_DURATION_SECONDS) {
-                count++
-                _events.tryEmit(FaceRecognitionEvents.ProvideNextFrame)
+        timerJob = viewModelScope.launch(dispatchersProvider.default) {
+            try {
+                withTimeout(FACE_RECOGNITION_SESSION_MAX_DURATION_MILLIS) {
+                    while (true) {
+                        _events.tryEmit(FaceRecognitionEvents.ProvideNextFrame)
 
-                delay(FACE_RECOGNITION_PERIOD_MILLIS)
+                        delay(FACE_RECOGNITION_PERIOD_MILLIS)
+                    }
+                }
+            } catch (timeout: TimeoutCancellationException) {
+                timerJob = null
+                goToSessionSummaryScreen()
             }
-
-            timerJob = null
-            goToSessionSummaryScreen()
         }
     }
 
@@ -119,6 +130,6 @@ class FaceRecognitionViewModel @Inject constructor(
         private const val MIN_LIGHT_LUX = 20
         private const val MAX_LIGHT_LUX = 1000
         private const val FACE_RECOGNITION_PERIOD_MILLIS = 1000L
-        private const val FACE_RECOGNITION_SESSION_MAX_DURATION_SECONDS = 30L
+        private const val FACE_RECOGNITION_SESSION_MAX_DURATION_MILLIS = 30_000L
     }
 }

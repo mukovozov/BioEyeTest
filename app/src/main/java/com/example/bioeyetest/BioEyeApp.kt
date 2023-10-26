@@ -9,9 +9,6 @@ import dagger.hilt.android.HiltAndroidApp
 // TODO: create style for button (check)
 // TODO: import font from figma
 
-// Questions
-// TODO: ask about libraries, hilt, dagger, architecture
-
 @HiltAndroidApp
 class BioEyeApp : Application() {
 

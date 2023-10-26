@@ -27,15 +27,16 @@ class FaceRecognitionProcessorImpl @Inject constructor(
 
     override suspend fun process(bitmap: Bitmap): Result<FaceRecognitionResult> {
         return withContext(dispatchersProvider.default) {
-            processImpl(bitmap).onSuccess { recognitionResult ->
-                faceRecognitionDataRepository.save(
-                    FaceRecognitionData(recognitionResult, timeProvider.currentTimeMillis)
-                )
-            }
+            processFrame(bitmap)
+                .onSuccess { recognitionResult ->
+                    faceRecognitionDataRepository.save(
+                        FaceRecognitionData(recognitionResult, timeProvider.currentTimeMillis)
+                    )
+                }
         }
     }
 
-    private suspend fun processImpl(bitmap: Bitmap): Result<FaceRecognitionResult> {
+    private suspend fun processFrame(bitmap: Bitmap): Result<FaceRecognitionResult> {
         return suspendCoroutine { continuation ->
             val inputImage = InputImage.fromBitmap(bitmap, 0)
 
