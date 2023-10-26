@@ -1,4 +1,4 @@
-package com.example.bioeyetest.core
+package com.example.bioeyetest.core.coroutines
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers

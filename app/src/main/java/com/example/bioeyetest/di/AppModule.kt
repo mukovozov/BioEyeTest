@@ -2,12 +2,12 @@ package com.example.bioeyetest.di
 
 import com.example.bioeyetest.ui.Navigator
 import com.example.bioeyetest.ui.NavigatorImpl
-import com.example.bioeyetest.core.DispatchersProvider
-import com.example.bioeyetest.core.DispatchersProviderImpl
-import com.example.bioeyetest.core.FileManager
-import com.example.bioeyetest.core.FileManagerImpl
-import com.example.bioeyetest.core.TimeProvider
-import com.example.bioeyetest.core.TimeProviderImpl
+import com.example.bioeyetest.core.coroutines.DispatchersProvider
+import com.example.bioeyetest.core.coroutines.DispatchersProviderImpl
+import com.example.bioeyetest.core.file.FileManager
+import com.example.bioeyetest.core.file.FileManagerImpl
+import com.example.bioeyetest.core.date_time.TimeProvider
+import com.example.bioeyetest.core.date_time.TimeProviderImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

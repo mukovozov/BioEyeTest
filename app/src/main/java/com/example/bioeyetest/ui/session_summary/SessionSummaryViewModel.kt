@@ -9,10 +9,9 @@ import com.example.bioeyetest.ui.Navigator
 import com.example.bioeyetest.R
 import com.example.bioeyetest.domain.csv_generation.SessionCSVGenerator
 import com.example.bioeyetest.data.face_recognition.FaceRecognitionResult
-import com.example.bioeyetest.core.TimeProvider
-import com.example.bioeyetest.core.format
+import com.example.bioeyetest.core.date_time.TimeProvider
+import com.example.bioeyetest.core.date_time.format
 import com.example.bioeyetest.data.face_recognition.FaceRecognitionDataRepository
-import com.example.bioeyetest.ui.recognition.UiFaceRecognitionResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow

@@ -1,9 +1,9 @@
 package com.example.bioeyetest.domain.csv_generation
 
 import com.example.bioeyetest.data.face_recognition.FaceRecognitionData
-import com.example.bioeyetest.core.DispatchersProvider
-import com.example.bioeyetest.core.FileManager
-import com.example.bioeyetest.core.format
+import com.example.bioeyetest.core.coroutines.DispatchersProvider
+import com.example.bioeyetest.core.file.FileManager
+import com.example.bioeyetest.core.date_time.format
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject

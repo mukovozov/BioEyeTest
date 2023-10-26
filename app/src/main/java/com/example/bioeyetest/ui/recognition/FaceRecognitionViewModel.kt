@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bioeyetest.ui.Navigator
 import com.example.bioeyetest.R
-import com.example.bioeyetest.core.DispatchersProvider
+import com.example.bioeyetest.core.coroutines.DispatchersProvider
 import com.example.bioeyetest.data.face_recognition.FaceRecognitionResult
 import com.example.bioeyetest.domain.face_recognition.FaceRecognitionProcessor
 import com.example.bioeyetest.data.sensor.LightSensorManager

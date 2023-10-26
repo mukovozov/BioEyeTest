@@ -1,6 +1,7 @@
-package com.example.bioeyetest.core
+package com.example.bioeyetest.core.file
 
 import android.content.Context
+import com.example.bioeyetest.core.coroutines.DispatchersProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.withContext
 import java.io.BufferedWriter

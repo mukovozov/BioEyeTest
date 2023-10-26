@@ -1,6 +1,6 @@
 package com.example.bioeyetest.data.face_recognition
 
-import com.example.bioeyetest.core.DispatchersProvider
+import com.example.bioeyetest.core.coroutines.DispatchersProvider
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
