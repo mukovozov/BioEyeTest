@@ -24,7 +24,7 @@ interface LightSensorManager {
     suspend fun requestSingleUpdate(): Float
 }
 
-class LightSensorManagerImpl @Inject constructor(
+internal class LightSensorManagerImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val dispatchersProvider: DispatchersProvider,
 ) : LightSensorManager {

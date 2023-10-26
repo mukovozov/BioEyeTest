@@ -15,7 +15,7 @@ interface SessionCSVGenerator {
     ): Result<File>
 }
 
-class SessionCSVGeneratorImpl @Inject constructor(
+internal class SessionCSVGeneratorImpl @Inject constructor(
     private val fileManager: FileManager,
     private val dispatchersProvider: DispatchersProvider,
 ) : SessionCSVGenerator {
